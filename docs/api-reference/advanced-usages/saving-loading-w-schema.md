@@ -24,7 +24,7 @@ import KeplerGlSchema from 'kepler.gl/schemas';
 const mapToSave = KeplerGlSchema.save(state.keplerGl.foo);
 // mapToSave = {datasets: [], config: {}, info: {}};
 
-const dataToSave = KeplerGlSchema.getDatasetToSave(state.keplerGl.foo);
+const dataToSave = KeplerGlSchema.getDatasetToSave(state.keplerGl.foo);  // KeplerGlSchema.getDatasetToSave
 // dataToSave = [{version: '', data: {id, label, color, allData, fields}}]
 
 const configToSave = KeplerGlSchema.getConfigToSave(state.keplerGl.foo);

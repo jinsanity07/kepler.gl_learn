@@ -70,6 +70,7 @@ const propertiesV1 = {
   })
 };
 
+// DatasetSchema
 class DatasetSchema extends Schema {
   key = 'dataset';
 

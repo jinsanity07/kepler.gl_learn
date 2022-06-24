@@ -101,7 +101,7 @@ The data object can be wrapped in a `dataset` and pass to [`addDataToMap`][18]
 
 ```javascript
 import {addDataToMap} from 'kepler.gl/actions';
-import {processGeojson} from 'kepler.gl/processors';
+import {processGeojson} from 'kepler.gl/processors';  //processGeojson
 
 const geojson = {
 	"type" : "FeatureCollection",
@@ -124,7 +124,7 @@ dispatch(addDataToMap({
      label: 'Sample Taxi Trips in New York City',
      id: 'test_trip_data'
    },
-   data: processGeojson(geojson)
+   data: processGeojson(geojson)          //processGeojson
  }
 }));
 ```
