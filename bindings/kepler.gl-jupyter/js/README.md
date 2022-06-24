@@ -35,7 +35,9 @@ Now make some changes to your source code. Then:
 - After making Python code changes, restarting the notebook kernel will be enough to reflect changes
 - After making JavaScript code changes:
   - `cd js`
-  - `npm run build`
+  - `yarn`                                             // install node modules based on yarn.lock file
+  - `node_modules\.bin\babel.cmd lib --out-dir babel`  // run babel to convert ECMAScript 2015+ code into a backwards compatible version of JavaScript
+  - `npm run build`                                    //  js file built in `dist` dir 
   - Refresh browser to reflect changes
 
 ### Local Dev Installation for JupyterLab

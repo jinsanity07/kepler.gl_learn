@@ -59,10 +59,10 @@ function processReceivedData({data, info}) {
   try {
     processed =
       info.queryType === 'csv'
-        ? processCsvData(data)
+        ? processCsvData(data)   // data processing 
         : info.queryType === 'json'
-        ? processGeojson(data)
-        : info.queryType === 'df'
+        ? processGeojson(data)  // data processing 
+        : info.queryType === 'df' 
         ? processDataFrame(data)
         : null;
   } catch (e) {
