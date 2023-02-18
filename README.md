@@ -50,7 +50,11 @@ Kepler.gl is also a React component that uses [Redux](https://redux.js.org/) to 
 
 Use Node 10.15.0 or above, older node versions have not been supported/ tested.
 For best results, use [nvm](https://github.com/creationix/nvm) `nvm install`.
-
+[nvm-windows](https://github.com/coreybutler/nvm-windows)
+```sh
+nvm install 12.0.0
+nvm use 12.0.0
+```
 ## Install kepler.gl
 
 Install node (`> 10.15.0`), yarn, and project dependencies
@@ -65,6 +69,15 @@ kepler.gl is built upon [mapbox][mapbox]. You will need a [Mapbox Access Token][
 
 If you don't use a module bundler, it's also fine. Kepler.gl npm package includes precompiled production UMD builds in the [umd folder](https://unpkg.com/kepler.gl/umd).
 You can add the script tag to your html file as it follows:
+
+### ode 18
+```sh
+npm install kepler.gl@2.5.5 --force
+npm run build:umd
+```
+
+* [Error message "error:0308010C:digital envelope routines::unsupported"](https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported)
+
 
 ```html
 <script src="https://unpkg.com/kepler.gl/umd/keplergl.min.js" />
@@ -85,6 +98,16 @@ Take a look at the [development guide][developers] to develop kepler.gl locally.
 Here are the basic steps to import kepler.gl into your app. You also take a look at the examples folder. Each example in the folder can be installed and run locally.
 
 ### 1. Mount reducer
+```js
+ import Task, {taskCreator} from 'react-palm/tasks';
+```
+task.bimap
+Provide transforms for the success and error payload of a task. Bimap takes
+> \src\reducers\vis-state-updaters.ts       makeLoadFileTask
+>   [ActionTypes.LOAD_NEXT_FILE]: visStateUpdaters.loadNextFileUpdater,
+
+> [ReactMarkdown](https://github.com/remarkjs/react-markdown)
+* \src\components\common\file-uploader\file-upload.tsx
 
 Kepler.gl uses Redux to manage its internal state, along with [react-palm][react-palm] middleware to handle side effects.
 
