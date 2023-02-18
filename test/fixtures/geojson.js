@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -267,7 +267,7 @@ export const fields = [
     valueAccessor: values => values[5]
   },
   {
-    type: 'geojson',
+    type: 'object',
     name: 'OBJ',
     id: 'OBJ',
     displayName: 'OBJ',
@@ -418,7 +418,8 @@ export const geoJsonTripFilterProps = {
   type: 'range',
   typeOptions: ['range'],
   value: [4, 20],
-  gpu: true
+  gpu: true,
+  view: 'side'
 };
 
 export const mergedTripFilter = {
@@ -427,8 +428,9 @@ export const mergedTripFilter = {
   dataId: [geoJsonDataId],
   freeze: true,
   id: 'TRIPS-3',
+  enabled: true,
   fixedDomain: false,
-  enlarged: false,
+  view: 'side',
   isAnimating: false,
   speed: 1,
   name: ['TRIPS'],
@@ -445,7 +447,8 @@ export const geoJsonRateFilterProps = {
   fieldType: 'string',
   type: 'multiSelect',
   value: [],
-  gpu: false
+  gpu: false,
+  view: 'side'
 };
 
 export const mergedRateFilter = {
@@ -455,8 +458,9 @@ export const mergedRateFilter = {
   dataId: [geoJsonDataId],
   freeze: true,
   id: 'RATE-1',
+  enabled: true,
   fixedDomain: false,
-  enlarged: false,
+  view: 'side',
   isAnimating: false,
   speed: 1,
   fieldIdx: [5],
@@ -557,7 +561,7 @@ export const geoStyleFields = [
     displayName: 'fillColor',
     format: '',
     fieldIdx: 1,
-    type: 'geojson',
+    type: 'array',
     analyzerType: 'ARRAY',
     valueAccessor: values => values[1]
   },
@@ -567,7 +571,7 @@ export const geoStyleFields = [
     displayName: 'lineColor',
     format: '',
     fieldIdx: 2,
-    type: 'geojson',
+    type: 'array',
     analyzerType: 'ARRAY',
     valueAccessor: values => values[2]
   },

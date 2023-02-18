@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import {ValueOf} from '@kepler.gl/types';
+
 export const TOOLTIP_FORMAT_TYPES = {
   NONE: 'none',
   DATE: 'date',
@@ -29,6 +31,13 @@ export const TOOLTIP_FORMAT_TYPES = {
 
 export const TOOLTIP_KEY = 'format';
 
+export type TooltipFormat = {
+  id: string;
+  label: string;
+  format: null | string;
+  type: ValueOf<typeof TOOLTIP_FORMAT_TYPES>;
+};
+
 export const TOOLTIP_FORMATS = {
   NONE: {
     id: 'NONE',
@@ -38,13 +47,19 @@ export const TOOLTIP_FORMATS = {
   },
   DECIMAL_SHORT: {
     id: 'DECIMAL_SHORT',
-    label: '10k',
+    label: '12345 → 10k',
     format: '.1s',
+    type: TOOLTIP_FORMAT_TYPES.DECIMAL
+  },
+  DECIMAL_COMMA: {
+    id: 'DECIMAL_COMMA',
+    label: '12345 → 12,345',
+    format: ',',
     type: TOOLTIP_FORMAT_TYPES.DECIMAL
   },
   DECIMAL_SHORT_COMMA: {
     id: 'DECIMAL_SHORT_COMMA',
-    label: '12.3k',
+    label: '12345 → 12.3k',
     format: '.3~s',
     type: TOOLTIP_FORMAT_TYPES.DECIMAL
   },
@@ -68,14 +83,14 @@ export const TOOLTIP_FORMATS = {
   },
   DECIMAL_DECIMAL_FIXED_2: {
     id: 'DECIMAL_DECIMAL_FIXED_2',
-    label: '1.23',
-    format: '.2f',
+    label: '1.2345 → 1.23',
+    format: '.2~f',
     type: TOOLTIP_FORMAT_TYPES.DECIMAL
   },
   DECIMAL_DECIMAL_FIXED_3: {
     id: 'DECIMAL_DECIMAL_FIXED_3',
-    label: '1.234',
-    format: '.3f',
+    label: '1.2345 → 1.234',
+    format: '.3~f',
     type: TOOLTIP_FORMAT_TYPES.DECIMAL
   },
   DECIMAL_INT: {
@@ -86,19 +101,19 @@ export const TOOLTIP_FORMATS = {
   },
   DECIMAL_THREE: {
     id: 'DECIMAL_THREE',
-    label: '12,345.432',
-    format: ',.3f',
+    label: '12345.4321 → 12,345.432',
+    format: ',.3~f',
     type: TOOLTIP_FORMAT_TYPES.DECIMAL
   },
   DECIMAL_DELTA: {
     id: 'DECIMAL_DELTA',
-    label: '+12,345.432',
+    label: '12345.4321 → +12,345.432',
     format: '+,.3f',
     type: TOOLTIP_FORMAT_TYPES.DECIMAL
   },
   DECIMAL_CURRENCY: {
     id: 'DECIMAL_CURRENCY',
-    label: '$12,345.43',
+    label: '12345.4321 → $12,345.43',
     format: '$,.2f',
     type: TOOLTIP_FORMAT_TYPES.DECIMAL
   },

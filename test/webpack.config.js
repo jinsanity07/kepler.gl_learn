@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,14 +32,14 @@ const COMMON_CONFIG = {
     },
     clientLogLevel: 'debug'
   },
-  entry: resolve(__dirname, './browser.js'),
   output: {
     filename: 'bundle.js'
   },
   devtool: 'inline-source-maps',
 
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    modules: [SRC_DIR, 'node_modules']
   },
 
   module: {

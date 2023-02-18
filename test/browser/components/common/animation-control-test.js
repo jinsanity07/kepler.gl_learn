@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,20 @@ import React from 'react';
 import test from 'tape';
 import sinon from 'sinon';
 import moment from 'moment';
-import {setLayerAnimationTimeConfig} from 'actions/vis-state-actions';
+import {setLayerAnimationTimeConfig} from '@kepler.gl/actions';
+import {getTimelineFromAnimationConfig} from '@kepler.gl/utils';
 
 import {mountWithTheme} from 'test/helpers/component-utils';
 import {
   AnimationControlFactory,
   PlaybackControlsFactory,
-  FloatingTimeDisplayFactory
-} from 'components';
-import {appInjector} from 'components/container';
-import {StateWTripGeojson} from 'test/helpers/mock-state';
-import {
-  AnimationWindowControl,
+  FloatingTimeDisplayFactory,
+  appInjector,
   IconButton
-} from 'components/common/animation-control/playback-controls';
-import reducer from 'reducers/vis-state';
+} from '@kepler.gl/components';
+import {StateWTripGeojson} from 'test/helpers/mock-state';
+
+import {visStateReducer as reducer} from '@kepler.gl/reducers';
 
 const AnimationControl = appInjector.get(AnimationControlFactory);
 const PlaybackControls = appInjector.get(PlaybackControlsFactory);
@@ -45,7 +44,7 @@ const FloatingTimeDisplay = appInjector.get(FloatingTimeDisplayFactory);
 test('Components -> AnimationControl.render', t => {
   t.doesNotThrow(() => {
     mountWithTheme(<AnimationControl />);
-  }, 'Show not fail without props');
+  }, 'Should not fail without props');
 
   t.end();
 });
@@ -55,19 +54,21 @@ test('Components -> AnimationControl -> render with props', t => {
   const toggleAnimation = sinon.spy();
   const setLayerAnimationTime = sinon.spy();
 
+  const timeline = getTimelineFromAnimationConfig(StateWTripGeojson.visState.animationConfig);
+
   t.doesNotThrow(() => {
     wrapper = mountWithTheme(
       <AnimationControl
         isAnimatable
-        setLayerAnimationTime={setLayerAnimationTime}
+        setTimelineValue={setLayerAnimationTime}
         toggleAnimation={toggleAnimation}
-        animationConfig={StateWTripGeojson.visState.animationConfig}
+        timeline={timeline}
       />
     );
-  }, 'Show not fail with trip layer props');
+  }, 'Should not fail with trip layer props');
 
   t.equal(
-    wrapper.find(AnimationWindowControl).length,
+    wrapper.find('.animation-window-control').length,
     0,
     'should not render AnimationWindowControl'
   );
@@ -76,7 +77,7 @@ test('Components -> AnimationControl -> render with props', t => {
 
   wrapper
     .find(IconButton)
-    .at(2)
+    .at(0)
     .simulate('click');
   t.ok(toggleAnimation.calledOnce, 'should call toggleAnimation');
   t.end();
@@ -85,6 +86,7 @@ test('Components -> AnimationControl -> render with props', t => {
 test('Components -> AnimationControl -> time display', t => {
   let wrapper;
 
+  const timeline = getTimelineFromAnimationConfig(StateWTripGeojson.visState.animationConfig);
   // because we are using locale based formats, we set a locale here to make sure
   // result are always the same
   moment.locale('en');
@@ -94,12 +96,12 @@ test('Components -> AnimationControl -> time display', t => {
     wrapper = mountWithTheme(
       <AnimationControl
         isAnimatable
-        setLayerAnimationTime={setLayerAnimationTime}
+        setTimelineValue={setLayerAnimationTime}
         toggleAnimation={toggleAnimation}
-        animationConfig={StateWTripGeojson.visState.animationConfig}
+        timeline={timeline}
       />
     );
-  }, 'Show not fail with props');
+  }, 'Should not fail with props');
 
   const timeDisplay = wrapper.find(FloatingTimeDisplay);
   const timeDomainStart = wrapper.find('.animation-control__time-domain.domain-start');
@@ -169,18 +171,20 @@ test('Components -> AnimationControl -> time display -> custom timezone and time
     })
   );
 
+  const timeline = getTimelineFromAnimationConfig(nextState.animationConfig);
+
   const toggleAnimation = () => {};
   const setLayerAnimationTime = () => {};
   t.doesNotThrow(() => {
     wrapper = mountWithTheme(
       <AnimationControl
         isAnimatable
-        setLayerAnimationTime={setLayerAnimationTime}
+        setTimelineValue={setLayerAnimationTime}
         toggleAnimation={toggleAnimation}
-        animationConfig={nextState.animationConfig}
+        timeline={timeline}
       />
     );
-  }, 'Show not fail with props');
+  }, 'Should not fail with props');
   const timeDisplay = wrapper.find(FloatingTimeDisplay);
   const timeDomainStart = wrapper.find('.animation-control__time-domain.domain-start');
   const timeDomainEnd = wrapper.find('.animation-control__time-domain.domain-end');

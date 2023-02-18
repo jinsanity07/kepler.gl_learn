@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -122,7 +122,7 @@ export const processedFields = [
     displayName: 'fillColor',
     format: '',
     fieldIdx: 1,
-    type: 'geojson',
+    type: 'array',
     analyzerType: 'ARRAY',
     valueAccessor: values => values[1]
   },

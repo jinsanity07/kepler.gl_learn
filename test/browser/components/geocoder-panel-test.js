@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,10 @@ import React from 'react';
 import sinon from 'sinon';
 import test from 'tape';
 import {IntlWrapper, mountWithTheme} from 'test/helpers/component-utils';
-import GeocoderPanelFactory from 'components/geocoder-panel';
-import {appInjector} from 'components/container';
-import {testForCoordinates} from 'components/geocoder/geocoder';
+import {GeocoderPanelFactory, appInjector, testForCoordinates} from '@kepler.gl/components';
 import {cmpDatasetData, cmpObjectKeys} from '../../helpers/comparison-utils';
+
+import {InitialState} from 'test/helpers/mock-state';
 
 const GeocoderPanel = appInjector.get(GeocoderPanelFactory);
 const MAPBOX_TOKEN = process.env.MapboxAccessToken;
@@ -43,6 +43,8 @@ test('GeocoderPanel - render', t => {
     width: 800,
     height: 800
   };
+
+  const mockUiState = InitialState.uiState;
 
   const mockGeoItem = {
     center: [1, 55],
@@ -151,6 +153,7 @@ test('GeocoderPanel - render', t => {
           isGeocoderEnabled={enabled}
           mapboxApiAccessToken={MAPBOX_TOKEN}
           mapState={mockMapState}
+          uiState={mockUiState}
           updateVisData={updateVisData}
           removeDataset={removeDataset}
           updateMap={updateMap}

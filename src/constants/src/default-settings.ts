@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 import keyMirror from 'keymirror';
-import {EditorModes} from 'react-map-gl-draw';
 
 import {
   scaleLinear,
@@ -37,6 +36,7 @@ export const ACTION_PREFIX = '@@kepler.gl/';
 export const CLOUDFRONT = 'https://d1a3f4spazzrp4.cloudfront.net/kepler.gl';
 export const ICON_PREFIX = `${CLOUDFRONT}/geodude`;
 export const DEFAULT_MAPBOX_API_URL = 'https://api.mapbox.com';
+export const TRANSITION_DURATION = 0;
 
 // Modal Ids
 /**
@@ -177,6 +177,11 @@ export const SIDEBAR_PANELS = [
   }
 ];
 
+export const PANEL_VIEW_TOGGLES = keyMirror({
+  list: null,
+  byDataset: null
+});
+
 // backward compatibility
 export const PANELS = SIDEBAR_PANELS;
 
@@ -201,7 +206,7 @@ export const DEFAULT_LAYER_GROUPS: DEFAULT_LAYER_GROUP[] = [
   },
   {
     slug: 'border',
-    filter: ({id}) => id.match(/border|boundaries/),
+    filter: ({id}) => id.match(/border|boundaries|boundary/),
     defaultVisibility: false
   },
   {
@@ -274,9 +279,11 @@ export const ICON_FIELDS = {
 export const TRIP_POINT_FIELDS: [string, string][] = [
   ['lat', 'lng'],
   ['lat', 'lon'],
+  ['lat', 'long'],
   ['latitude', 'longitude']
 ];
 
+export const ALTITUDE_FIELDS = ['alt', 'altitude'];
 export const TRIP_ARC_FIELDS = {
   lat0: 'begintrip',
   lng0: 'begintrip',
@@ -292,6 +299,14 @@ export const FILTER_TYPES = keyMirror({
   multiSelect: null,
   polygon: null
 });
+
+export const FILTER_VIEW_TYPES = keyMirror({
+  side: null,
+  enlarged: null,
+  minified: null
+});
+
+export const DEFAULT_FILTER_VIEW_TYPE = FILTER_VIEW_TYPES.side;
 
 export const SCALE_TYPES = keyMirror({
   ordinal: null,
@@ -323,7 +338,9 @@ export const ALL_FIELD_TYPES = keyMirror({
   real: null,
   string: null,
   timestamp: null,
-  point: null
+  point: null,
+  array: null,
+  object: null
 });
 
 // Data Table
@@ -376,16 +393,18 @@ export const TABLE_OPTION_LIST = [
   {value: TABLE_OPTION.COPY, display: 'Copy Column', icon: 'Clipboard'}
 ];
 
-const ORANGE = '248, 194, 28';
-const PINK = '231, 189, 194';
+const YELLOW = '248, 194, 28';
+const PINK = '242, 152, 163';
 const PURPLE = '160, 106, 206';
 const BLUE = '140, 210, 205';
 const BLUE2 = '106, 160, 206';
 const BLUE3 = '0, 172, 237';
 const GREEN = '106, 160, 56';
+const GREEN2 = '74, 165, 150';
 const RED = '237, 88, 106';
+const ORANGE = '231, 110, 58';
 
-export const FILED_TYPE_DISPLAY = {
+export const FIELD_TYPE_DISPLAY = {
   [ALL_FIELD_TYPES.boolean]: {
     label: 'bool',
     color: PINK
@@ -400,11 +419,11 @@ export const FILED_TYPE_DISPLAY = {
   },
   [ALL_FIELD_TYPES.integer]: {
     label: 'int',
-    color: ORANGE
+    color: YELLOW
   },
   [ALL_FIELD_TYPES.real]: {
     label: 'float',
-    color: ORANGE
+    color: YELLOW
   },
   [ALL_FIELD_TYPES.string]: {
     label: 'string',
@@ -418,6 +437,14 @@ export const FILED_TYPE_DISPLAY = {
   [ALL_FIELD_TYPES.point]: {
     label: 'point',
     color: BLUE3
+  },
+  [ALL_FIELD_TYPES.array]: {
+    label: 'array',
+    color: ORANGE
+  },
+  [ALL_FIELD_TYPES.object]: {
+    label: 'object',
+    color: GREEN2
   }
 };
 
@@ -535,7 +562,7 @@ export const DEFAULT_AGGREGATION = {
  * Define what type of scale operation is allowed on each type of fields
  */
 export const FIELD_OPTS = {
-  string: {
+  [ALL_FIELD_TYPES.string]: {
     type: 'categorical',
     scale: {
       ...ordinalFieldScaleFunctions,
@@ -546,7 +573,7 @@ export const FIELD_OPTS = {
       tooltip: []
     }
   },
-  real: {
+  [ALL_FIELD_TYPES.real]: {
     type: 'numerical',
     scale: {
       ...linearFieldScaleFunctions,
@@ -561,7 +588,7 @@ export const FIELD_OPTS = {
       ]
     }
   },
-  timestamp: {
+  [ALL_FIELD_TYPES.timestamp]: {
     type: 'time',
     scale: {
       ...linearFieldScaleFunctions,
@@ -576,7 +603,7 @@ export const FIELD_OPTS = {
       ]
     }
   },
-  integer: {
+  [ALL_FIELD_TYPES.integer]: {
     type: 'numerical',
     scale: {
       ...linearFieldScaleFunctions,
@@ -591,7 +618,7 @@ export const FIELD_OPTS = {
       ]
     }
   },
-  boolean: {
+  [ALL_FIELD_TYPES.boolean]: {
     type: 'boolean',
     scale: {
       ...ordinalFieldScaleFunctions,
@@ -602,7 +629,8 @@ export const FIELD_OPTS = {
       tooltip: [TOOLTIP_FORMAT_TYPES.NONE, TOOLTIP_FORMAT_TYPES.BOOLEAN]
     }
   },
-  date: {
+  [ALL_FIELD_TYPES.date]: {
+    type: 'time',
     scale: {
       ...ordinalFieldScaleFunctions,
       ...ordinalFieldAggrScaleFunctions
@@ -612,12 +640,28 @@ export const FIELD_OPTS = {
       tooltip: [TOOLTIP_FORMAT_TYPES.NONE, TOOLTIP_FORMAT_TYPES.DATE]
     }
   },
-  geojson: {
+  [ALL_FIELD_TYPES.geojson]: {
     type: 'geometry',
     scale: {
       ...notSupportedScaleOpts,
       ...notSupportAggrOpts
     },
+    format: {
+      legend: d => '...',
+      tooltip: []
+    }
+  },
+  [ALL_FIELD_TYPES.object]: {
+    type: 'numerical',
+    scale: {},
+    format: {
+      legend: d => '...',
+      tooltip: []
+    }
+  },
+  [ALL_FIELD_TYPES.array]: {
+    type: 'numerical',
+    scale: {},
     format: {
       legend: d => '...',
       tooltip: []
@@ -628,7 +672,9 @@ export const FIELD_OPTS = {
 export const CHANNEL_SCALE_SUPPORTED_FIELDS = Object.keys(CHANNEL_SCALES).reduce(
   (accu, key) => ({
     ...accu,
-    [key]: Object.keys(FIELD_OPTS).filter(ft => Object.keys(FIELD_OPTS[ft].scale[key]).length)
+    [key]: Object.keys(FIELD_OPTS).filter(
+      ft => FIELD_OPTS[ft].scale[key] && Object.keys(FIELD_OPTS[ft].scale[key]).length
+    )
   }),
   {} as {[id: string]: string[]}
 );
@@ -644,6 +690,23 @@ export const DEFAULT_LAYER_COLOR = {
 export const DEFAULT_TOOLTIP_FIELDS: any[] = [];
 
 export const NO_VALUE_COLOR: RGBAColor = [0, 0, 0, 0];
+
+export const DEFAULT_PICKING_RADIUS = 3;
+
+export const OVERLAY_BLENDINGS = {
+  normal: {
+    label: 'overlayBlending.normal',
+    value: 'normal'
+  },
+  screen: {
+    label: 'overlayBlending.screen',
+    value: 'screen'
+  },
+  darken: {
+    label: 'overlayBlending.darken',
+    value: 'darken'
+  }
+};
 
 export const LAYER_BLENDINGS = {
   additive: {
@@ -678,6 +741,27 @@ export const EXPORT_IMG_RATIOS = keyMirror({
   SIXTEEN_BY_NINE: null,
   CUSTOM: null
 });
+
+export type ExportImage = {
+  ratio: keyof typeof EXPORT_IMG_RATIOS;
+  resolution: keyof typeof RESOLUTIONS;
+  legend: boolean;
+  mapH: number;
+  mapW: number;
+  imageSize: {
+    zoomOffset: number;
+    scale: number;
+    imageW: number;
+    imageH: number;
+  };
+  // exporting state
+  imageDataUri: string;
+  exporting: boolean;
+  processing: boolean;
+  error: Error | false;
+  // This field was not in the .d.ts file
+  center: boolean;
+};
 
 export type ImageRatioOption = {
   id: keyof typeof EXPORT_IMG_RATIOS;
@@ -842,7 +926,7 @@ export const DEFAULT_NOTIFICATION_TOPICS = keyMirror({
 });
 
 // Minimum time between identical notifications about deck.gl errors
-export const THROTTLE_NOTIFICATION_TIME = 2500;
+export const THROTTLE_NOTIFICATION_TIME = 330;
 
 // Animation
 export const BASE_SPEED = 600;
@@ -887,20 +971,22 @@ export const GEOCODER_GEO_OFFSET = 0.05;
 export const GEOCODER_ICON_COLOR: [number, number, number] = [255, 0, 0];
 export const GEOCODER_ICON_SIZE = 80;
 
-// We could use directly react-map-gl-draw EditorMode but this would
-// create a direct dependency with react-map-gl-draw
-// Created this map to be independent from react-map-gl-draw
+// Editor
+export const EDITOR_LAYER_ID = 'kepler_editor_layer';
+export const EDITOR_LAYER_PICKING_RADIUS = 6;
 export const EDITOR_MODES = {
-  READ_ONLY: EditorModes.READ_ONLY,
-  DRAW_POLYGON: EditorModes.DRAW_POLYGON,
-  DRAW_RECTANGLE: EditorModes.DRAW_RECTANGLE,
-  EDIT: EditorModes.EDIT_VERTEX
+  DRAW_POLYGON: 'DRAW_POLYGON',
+  DRAW_RECTANGLE: 'DRAW_RECTANGLE',
+  EDIT: 'EDIT_VERTEX'
 };
 
 export const PLOT_TYPES = keyMirror({
   histogram: null,
   lineChart: null
 });
+
+// Filter
+export const INIT_FILTER_ITEMS_IN_DROPDOWN = 100;
 
 // GPU Filtering
 /**
@@ -923,6 +1009,8 @@ export const LOADING_METHODS = keyMirror({
   storage: null
 });
 
+export const DEFAULT_FEATURE_FLAGS = {};
+
 export const DATASET_FORMATS = keyMirror({
   row: null,
   geojson: null,
@@ -938,3 +1026,10 @@ export const MAP_CONTROLS = keyMirror({
   mapDraw: null,
   mapLocale: null
 });
+
+/**
+ * A multiplier for screen-space width/scale for Arc, Line, Icon and Text layers.
+ * Required in order to maintain the same appearance after upgrading to deck.gl v8.5.
+ * https://github.com/visgl/deck.gl/blob/master/docs/upgrade-guide.md
+ */
+export const PROJECTED_PIXEL_SIZE_MULTIPLIER = 2 / 3;

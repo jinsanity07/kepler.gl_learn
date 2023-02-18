@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,8 @@
 // THE SOFTWARE.
 
 import {FILTER_TYPES} from '@kepler.gl/constants';
-import {toArray} from '../../src/utils/utils';
-import KeplerTable from '../../src/utils/table-utils/kepler-table';
+import {toArray} from '@kepler.gl/utils';
+import {KeplerTable} from '@kepler.gl/table';
 
 export function cmpObjectKeys(t, expectedObj, actualObj, name) {
   t.deepEqual(
@@ -43,7 +43,7 @@ export function cmpFilters(t, expectedFilter, actualFilter, opt = {}, idx = '', 
       `${name} should have same number of filters`
     );
     expectedFilter.forEach((f, i) => {
-      cmpFilters(t, expectedFilter[i], actualFilter[i], opt, i, name);
+      cmpFilters(t, expectedFilter[i], actualFilter[i], opt, String(i), name);
     });
   } else {
     cmpObjectKeys(
@@ -97,7 +97,7 @@ export function cmpLayers(t, expectedLayer, actualLayer, opt = {}) {
     cmpObjectKeys(t, expectedLayer.config, actualLayer.config, `layer.${actualLayer.id}`);
 
     Object.keys(expectedLayer.config).forEach(key => {
-      // test everything except color and id, which is auto generated
+      // test everything except color and id, which are auto generated
       // also skip functions
       switch (key) {
         // list of fields
@@ -163,7 +163,7 @@ export function cmpSavedLayers(t, expectedLayer, actualLayer, opt = {}, idx = ''
   if (Array.isArray(expectedLayer) && Array.isArray(actualLayer)) {
     t.equal(actualLayer.length, expectedLayer.length, 'should have same number of layers');
     expectedLayer.forEach((_, i) => {
-      cmpSavedLayers(t, expectedLayer[i], actualLayer[i], opt, i);
+      cmpSavedLayers(t, expectedLayer[i], actualLayer[i], opt, String(i));
     });
   } else {
     cmpObjectKeys(t, expectedLayer, actualLayer, `idx:${idx} | layer.${actualLayer.type}`);
@@ -227,11 +227,13 @@ export function cmpDatasets(t, expectedDatasets, actualDatasets) {
     cmpDataset(t, expectedDatasets[dataId], actualDatasets[dataId]);
   });
 }
+
 export function assertDatasetIsTable(t, dataset) {
   t.ok(dataset instanceof KeplerTable, `${dataset.label || 'dataset'} should be a KeplerTable`);
 }
 
 export function cmpDataset(t, expectedDataset, actualDataset, opt = {}) {
+  assertDatasetIsTable(t, actualDataset);
   cmpObjectKeys(t, expectedDataset, actualDataset, `dataset:${expectedDataset.id}`);
 
   // test everything except auto generated color
@@ -332,7 +334,7 @@ export function cmpInteraction(t, expectedInt, actualInt) {
   });
 }
 
-export function cmpParsedAppConfigs(t, expectedConfig, actualConfig, {name} = {}) {
+export function cmpParsedAppConfigs(t, expectedConfig, actualConfig, {name = ''} = {}) {
   t.deepEqual(actualConfig, expectedConfig, `${name} should be expected`);
 
   Object.keys(actualConfig).forEach(key => {
@@ -353,14 +355,14 @@ export function cmpParsedAppConfigs(t, expectedConfig, actualConfig, {name} = {}
   });
 }
 
-export function cmpFields(t, expected, actual, name) {
+export function cmpFields(t, expected, actual, name, opt = {}) {
   t.equal(expected.length, actual.length, `dataset.${name} should have same number of fields`);
   actual.forEach((actualField, i) => {
-    cmpField(t, expected[i], actualField, `dataset.${name} fields ${actualField.name}`);
+    cmpField(t, expected[i], actualField, `dataset.${name} fields ${actualField.name}`, opt);
   });
 }
 
-export function cmpField(t, expected, actual, name) {
+export function cmpField(t, expected, actual, name, opt = {}) {
   if (expected && actual) {
     cmpObjectKeys(t, expected, actual, name);
 
@@ -385,7 +387,22 @@ export function cmpField(t, expected, actual, name) {
           });
         }
       } else if (k === 'valueAccessor') {
-        t.ok(typeof actual[k] === 'function', `${name}.valueAccessor should be a function`);
+        // compare value accessor
+        if (opt.dataset) {
+          // test valueAccessor with first value
+
+          t.equal(
+            actual.valueAccessor(opt.dataset.dataContainer.rowAsArray(0)),
+            getFieldValueAccessor(
+              expected,
+              expected.fieldIdx
+            )(opt.dataset.dataContainer.rowAsArray(0)),
+            `${name} have correct valueAccessor function`
+          );
+        } else {
+          // assert it is a
+          t.ok(typeof actual[k] === 'function', `${name}.valueAccessor should be a function`);
+        }
       } else {
         t.deepEqual(actual[k], expected[k], `${name}.${k} should be the same`);
       }

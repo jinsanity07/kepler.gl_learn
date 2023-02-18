@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ import {
   getTooltipDisplayValue,
   getTooltipDisplayDeltaValue,
   TOOLTIP_MINUS_SIGN
-} from 'utils/interaction-utils';
+} from '@kepler.gl/reducers';
 import {DEFAULT_TOOLTIP_FIELDS, COMPARE_TYPES} from '@kepler.gl/constants';
 import {StateWTooltipFormat, testGeoJsonDataId} from 'test/helpers/mock-state';
 
@@ -237,8 +237,7 @@ test('interactionUtil -> getTooltipDisplayValue', t => {
       dataset.dataContainer.map(data =>
         getTooltipDisplayValue({
           field,
-          data,
-          fieldIdx,
+          value: data.valueAt(fieldIdx),
           item: tc.input
         })
       ),

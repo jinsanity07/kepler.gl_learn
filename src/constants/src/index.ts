@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ export * from './color-palette';
 export * from './color-ranges';
 export * from './custom-color-ranges';
 export * from './default-settings';
+export * from './layers';
 export {default as KeyEvent} from './keyevent';
 export * from './tooltip';
 export * from './user-feedbacks';

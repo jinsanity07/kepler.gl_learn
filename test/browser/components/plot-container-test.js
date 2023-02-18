@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,14 @@ import React from 'react';
 import {IntlWrapper, mountWithTheme} from 'test/helpers/component-utils';
 
 import test from 'tape';
-import {appInjector, PlotContainerFactory, MapContainerFactory} from 'components';
-import {plotContainerSelector} from 'components/kepler-gl';
+import {
+  appInjector,
+  PlotContainerFactory,
+  plotContainerSelector
+} from '@kepler.gl/components';
 import {mockKeplerProps} from '../../helpers/mock-state';
 
 const PlotContainer = appInjector.get(PlotContainerFactory);
-const MapContainer = appInjector.get(MapContainerFactory);
 const initialProps = plotContainerSelector(mockKeplerProps);
 
 test('PlotContainer -> mount', t => {
@@ -61,7 +63,7 @@ test('PlotContainer -> mount -> imageSize', t => {
     );
   }, 'PlotContainer should not fail without props');
 
-  let map = wrapper.find(MapContainer).instance();
+  let map = wrapper.find('MapContainer').instance();
 
   t.equal(map.props.mapState.width, 800, 'should send imageW to mapState');
   t.equal(map.props.mapState.height, 600, 'should send imageH to mapState');
@@ -77,7 +79,7 @@ test('PlotContainer -> mount -> imageSize', t => {
     );
   }, 'PlotContainer should not fail without props');
 
-  map = wrapper.find(MapContainer).instance();
+  map = wrapper.find('MapContainer').instance();
 
   t.equal(map.props.mapState.latitude, 33.89064297228446, 'should set latitude when center: true');
   t.equal(

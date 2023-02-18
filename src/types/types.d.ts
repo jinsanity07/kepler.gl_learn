@@ -16,3 +16,9 @@ export type Entries<T> = {
 export type NestedPartial<T> = {
   [P in keyof T]?: NestedPartial<T[P]>;
 };
+
+export type RowData = {
+  [key: string]: string | null;
+}[];
+
+export type ProcessorResult = {fields: Field[]; rows: any[][]} | null;
