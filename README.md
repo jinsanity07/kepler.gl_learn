@@ -46,14 +46,18 @@ Kepler.gl is also a React component that uses [Redux](https://redux.js.org/) to 
 - [Api Reference][api-reference]
 - [Roadmap][roadmap]
 
+- [ enhance demo][https://natsuapo.github.io/keplerjis/]
+* https://github.com/natsuapo/keplerjis
+* https://cdn.jsdelivr.net/gh/natsuapo/keplerjis@main/keplergl.min.js
+* https://unpkg.com/kepler.gl@2.5.5/umd/keplergl.min.js
 ## Env
 
 Use Node 10.15.0 or above, older node versions have not been supported/ tested.
 For best results, use [nvm](https://github.com/creationix/nvm) `nvm install`.
 [nvm-windows](https://github.com/coreybutler/nvm-windows)
 ```sh
-nvm install 12.0.0
-nvm use 12.0.0
+nvm install 16.0.0
+nvm use 16.0.0
 ```
 ## Install kepler.gl
 
@@ -71,9 +75,21 @@ If you don't use a module bundler, it's also fine. Kepler.gl npm package include
 You can add the script tag to your html file as it follows:
 
 ### ode 18
+webpack : resolve.symlinks
+* [Webpack 4: Cannot resolve dependancy of symlinked module
+](https://github.com/webpack/webpack/issues/8824) 
+* [Chore] Move more example import to @kepler.gl #1977
+* [Chore]: Technical: Isolate utils #1876
+* * https://github.com/keplergl/kepler.gl/pull/1876/files#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519
+
+* [Chore]: Technical: constants and types modules isolation #1840
 ```sh
 npm install kepler.gl@2.5.5 --force
 npm run build:umd
+
+npm ls '@kepler.gl/constants'
+npm link '@kepler.gl/reducers'
+
 ```
 
 * [Error message "error:0308010C:digital envelope routines::unsupported"](https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported)
